@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" href="style.css" />
+    <title>Desafio do Módulo 01</title>
+  </head>
+  <body>
+    <header>
+      <h1>Pesquisa de usuários</h1>
+    </header>
+    <main>
+      <p class="instructions">Para realizar a busca, comece a digitar no campo abaixo. Após, clique 
+        no botão "Buscar" ou pressione a tecla "Enter".</p>
+      <form>
+        <input type="text" name="search" id="searchField" placeholder="Buscar" />
+        <button disabled class="btn disabled">Buscar</button>
+      </form>
+      <div class="container">
+        <div class="users">
+          <h2 id="users-list-title">Nenhum usuário filtrado</h2>
+          <div class="users-list hidden-item">
+            <ul>
+              <li>
+                <img class="avatar" src="img/femaleAvatar.svg" alt="woman avatar">
+                <p>Jenny Adomaitis, 18 anos</p>
+              </li>
+              <li>
+                <img class="avatar" src="img/maleAvatar.svg" alt="man avatar">
+                <p>Thiago Adomaitis, 27 anos</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="stats">
+          <h2 id="stats-title">Nada a ser exibido</h2>
+          <div class="stats-list hidden-item">
+            <ul>
+              <li>Sexo masculino: <span class="data" id="male-users" >1</span></li>
+              <li>Sexo feminino: <span class="data" id="female-users">1</span></li>
+              <li>Soma das idades: <span class="data" id="total-age">40</span></li>
+              <li>Média das idades: <span class="data" id="average-age">20</span> </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <main>    
+    <script src="js/script.js"></script>
+  </body>
+</html>
