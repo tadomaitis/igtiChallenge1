@@ -17,7 +17,7 @@ let usersListDiv = null;
 let statsListDiv = null;
 
 window.addEventListener("load", () => {
-  filterInput = document.querySelector("#searchField");
+  filterInput = document.querySelector("#search-field");
   searchButton = document.querySelector(".btn");
 
   globalUsersListTitle = document.querySelector("#users-list-title");
@@ -26,14 +26,23 @@ window.addEventListener("load", () => {
   usersListDiv = document.querySelector(".users-list");
   statsListDiv = document.querySelector(".stats-list");
 
-  const clickMeButton = document.createElement("button");
-  clickMeButton.innerHTML = "Click Me";
-  const main = document.querySelector("main");
-  main.appendChild(clickMeButton);
+  filterInput.addEventListener("keyup", (event) => {
+    if (filterInput.value.trim() === "") {
+      clearInput();
+      disableInput();
+    } else {
+      enableInput();
+    }
+    if (event.key === "Enter" && filterInput.value.trim() !== "") {
+      renderDataDivs();
+      changeListTitles();
+    }
+  });
 
-  clickMeButton.addEventListener("click", changeThings);
+  searchButton.addEventListener("click", renderDataDivs);
 
-  // fetchUsers();
+  clearInput();
+  //fetchUsers();
 });
 
 async function fetchUsers() {
@@ -41,24 +50,44 @@ async function fetchUsers() {
     const res = await fetch(
       "https://randomuser.me/api/?seed=javascript&results=100&nat=BR&noinfo"
     );
-    console.log(res);
-    const resJson = await res.json();
-    console.log(resJson);
+    const json = await res.json();
+    console.log(json.results);
+
+    globalUsersList = json.results.map((user) => {
+      const { name, picture, dob, gender } = user;
+
+      return {
+        fullName: `${name.first} ${name.last}`,
+        picture: picture.large,
+        age: dob.age,
+        gender,
+      };
+    });
   } catch (error) {
     console.error("Não foi possível obter os dados da API. " + error);
   }
 }
 
-function changeThings() {
-  enableDisableInput();
-  changeListTitles();
+function renderEmptyDivs() {
   hideItem(statsListDiv);
   hideItem(usersListDiv);
 }
 
-function enableDisableInput() {
-  filterInput.classList.toggle("has-text");
-  searchButton.classList.toggle("enabled");
+function renderDataDivs() {
+  showItem(statsListDiv);
+  showItem(usersListDiv);
+}
+
+function enableInput() {
+  filterInput.classList.add("has-text");
+  searchButton.classList.add("enabled");
+  searchButton.disabled = false;
+}
+
+function disableInput() {
+  filterInput.classList.remove("has-text");
+  searchButton.classList.remove("enabled");
+  searchButton.disabled = true;
 }
 
 function changeListTitles() {
@@ -75,5 +104,14 @@ function changeListTitles() {
 }
 
 function hideItem(element) {
-  element.classList.toggle("hidden-item");
+  element.classList.add("hidden-item");
+}
+
+function showItem(element) {
+  element.classList.remove("hidden-item");
+}
+
+function clearInput() {
+  filterInput.value = "";
+  filterInput.focus();
 }
