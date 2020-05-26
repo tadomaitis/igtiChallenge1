@@ -1,17 +1,19 @@
 let filterInput = null;
 let searchButton = null;
 
-let globalUsersList = null;
+let globalAllUsers = null;
 let globalUsersStats = null;
+
+let globalUsersList = null;
+let globalStatsList = null;
 
 let globalUsersListTitle = null;
 let globalStatsTitle = null;
 
-let globalFilteredUsersCount = 0;
-let globalMaleFilteredUsersCount = 0;
-let globalFemaleFilteredUsersCount = 0;
+let globalMaleUsers = null;
+let globalFemaleUsers = null;
 let globalTotalAge = 0;
-let globalAgeAverage = 0;
+let globalAverageAge = 0;
 
 let usersListDiv = null;
 let statsListDiv = null;
@@ -26,6 +28,9 @@ window.addEventListener("load", () => {
   usersListDiv = document.querySelector(".users-list");
   statsListDiv = document.querySelector(".stats-list");
 
+  globalUsersList = document.querySelector("#users-list");
+  globalStatsList = document.querySelector("#stats-list");
+
   filterInput.addEventListener("keyup", (event) => {
     if (filterInput.value.trim() === "") {
       clearInput();
@@ -35,14 +40,17 @@ window.addEventListener("load", () => {
     }
     if (event.key === "Enter" && filterInput.value.trim() !== "") {
       renderDataDivs();
-      changeListTitles();
     }
   });
 
-  searchButton.addEventListener("click", renderDataDivs);
+  searchButton.addEventListener("click", () => {
+    if (filterInput.value.trim() !== "") {
+      renderDataDivs();
+    }
+  });
 
   clearInput();
-  //fetchUsers();
+  fetchUsers();
 });
 
 async function fetchUsers() {
@@ -53,7 +61,7 @@ async function fetchUsers() {
     const json = await res.json();
     console.log(json.results);
 
-    globalUsersList = json.results.map((user) => {
+    globalAllUsers = json.results.map((user) => {
       const { name, picture, dob, gender } = user;
 
       return {
@@ -74,8 +82,73 @@ function renderEmptyDivs() {
 }
 
 function renderDataDivs() {
+  const data = [];
+  let usersHTML = "";
+
+  globalAllUsers.filter((user) => {
+    if (user.fullName.toLowerCase().includes(filterInput.value.toLowerCase())) {
+      data.push(user);
+    }
+  });
+
+  data.forEach((user) => {
+    const userHTML = `
+      <li>
+        <img class="avatar" src="${user.picture}" alt="user avatar"/>
+        <p>${user.fullName}, ${user.age}</p>
+      </li>`;
+    usersHTML += userHTML;
+  });
+
+  globalUsersList.innerHTML = usersHTML;
+  changeListTitles();
+  setCounters();
   showItem(statsListDiv);
   showItem(usersListDiv);
+
+  function changeListTitles() {
+    if (data === []) {
+      globalUsersListTitle.innerHTML = "Nenhum usuário filtrado";
+      globalStatsTitle.innerHTML = "Nada a ser exibido";
+    } else {
+      globalUsersListTitle.innerHTML = `${data.length} usuário(s) encontrado(s)`;
+      globalStatsTitle.innerHTML = "Estatísticas";
+    }
+  }
+
+  function setCounters() {
+    const maleUsers = [];
+    const femaleUsers = [];
+
+    data.filter((user) => {
+      if (user.gender === "male") {
+        maleUsers.push(user);
+      }
+    });
+
+    data.filter((user) => {
+      if (user.gender === "female") {
+        femaleUsers.push(user);
+      }
+    });
+
+    globalMaleUsers = document.querySelector("#male-users");
+    globalFemaleUsers = document.querySelector("#female-users");
+
+    globalMaleUsers.innerHTML = maleUsers.length;
+    globalFemaleUsers.innerHTML = femaleUsers.length;
+
+    globalTotalAge = data.reduce((accumulator, current) => {
+      return accumulator + current.age;
+    }, 0);
+    globalAverageAge = parseFloat((globalTotalAge / data.length).toFixed(2));
+
+    const totalAgeHTML = document.querySelector("#total-age");
+    const averageAgeHTML = document.querySelector("#average-age");
+
+    totalAgeHTML.innerHTML = globalTotalAge;
+    averageAgeHTML.innerHTML = globalAverageAge;
+  }
 }
 
 function enableInput() {
@@ -88,19 +161,6 @@ function disableInput() {
   filterInput.classList.remove("has-text");
   searchButton.classList.remove("enabled");
   searchButton.disabled = true;
-}
-
-function changeListTitles() {
-  if (globalUsersListTitle.innerHTML === "Nenhum usuário filtrado") {
-    globalUsersListTitle.innerHTML = "N usuário (s) encontrados (s)";
-  } else {
-    globalUsersListTitle.innerHTML = "Nenhum usuário filtrado";
-  }
-  if (globalStatsTitle.innerHTML === "Nada a ser exibido") {
-    globalStatsTitle.innerHTML = "Estatísticas";
-  } else {
-    globalStatsTitle.innerHTML = "Nada a ser exibido";
-  }
 }
 
 function hideItem(element) {
