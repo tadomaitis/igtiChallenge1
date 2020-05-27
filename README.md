@@ -1,6 +1,5 @@
 # Pesquisa em dados de API
 
-One Paragraph of project description goes here
 Projeto desenvolvido como desafio do primeiro módulo do bootcamp Fullstack do IGTI. Funcionalidade de pesquisa em dados obtidos de API pública, usando apenas Javascript puro (*no frameworks*).
 
 ![](assets/mainScreen.gif)
